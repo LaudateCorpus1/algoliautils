@@ -6,16 +6,16 @@ import (
 )
 
 type AlgoliaMatch struct {
-	Value string
+	Value      string
 	MatchLevel string
 }
 
 type AlgoliaResult struct {
-	Object map[string]interface {}
+	Object             map[string]interface{}
 	HighlightedResults map[string]AlgoliaMatch
 }
 
-func (this *AlgoliaResult)ObjectID() string {
+func (this *AlgoliaResult) ObjectID() string {
 	o, ok := this.Object["objectID"]
 	if ok == true {
 		return String(o)
@@ -54,31 +54,31 @@ func (this *AlgoliaResult)ObjectID() string {
   "query": "jimmie paint",
   "params": "query=jimmie+paint&attributesToRetrieve=firstname,lastname&hitsPerPage=50"
 
- */
+*/
 type AlgoliaSearchResponse struct {
-	Hits []AlgoliaResult
-	Page int64
-	NBHits int64
-	NBPages int64
+	Hits             []AlgoliaResult
+	Page             int64
+	NBHits           int64
+	NBPages          int64
 	ProcessingTimeMS int64
-	Query string
-	Params string
+	Query            string
+	Params           string
 }
 
-func NewAlgoliaSearchResponse(r interface {}) AlgoliaSearchResponse {
+func NewAlgoliaSearchResponse(r interface{}) AlgoliaSearchResponse {
 	out := AlgoliaSearchResponse{}
 
-	if m,ok := r.(map[string]interface {}); ok == true {
+	if m, ok := r.(map[string]interface{}); ok == true {
 		out.Page = Int(m["page"])
-		out.NBHits = Int(m["nbhits"])
-		out.NBPages = Int(m["nbpages"])
+		out.NBHits = Int(m["nbHits"])
+		out.NBPages = Int(m["nbPages"])
 		out.ProcessingTimeMS = Int(m["processingTimeMS"])
 		out.Query = String(m["query"])
 		out.Params = String(m["params"])
 
-		if results, has_results := m["hits"].([]interface {}); has_results == true {
+		if results, has_results := m["hits"].([]interface{}); has_results == true {
 			for _, result := range results {
-				if result_map, has_result_map := result.(map[string]interface {}); has_result_map == true {
+				if result_map, has_result_map := result.(map[string]interface{}); has_result_map == true {
 					out.Hits = append(out.Hits, NewAlgoliaResult(result_map))
 				}
 			}
@@ -96,7 +96,7 @@ func NewAlgoliaResult(results_map map[string]interface{}) AlgoliaResult {
 
 	for key, value := range results_map {
 		if key == "_highlightResult" {
-			if casted, ok := value.(map[string]interface {}); ok == true {
+			if casted, ok := value.(map[string]interface{}); ok == true {
 				for match_key, match := range casted {
 					if match_map, has_match_map := match.(map[string]interface{}); has_match_map == true {
 						out.HighlightedResults[match_key] = NewAlgoliaMatch(match_map)
@@ -111,7 +111,7 @@ func NewAlgoliaResult(results_map map[string]interface{}) AlgoliaResult {
 	return out
 }
 
-func NewAlgoliaMatch (match_map map[string]interface {}) AlgoliaMatch {
+func NewAlgoliaMatch(match_map map[string]interface{}) AlgoliaMatch {
 
 	out := AlgoliaMatch{}
 	out.Value = String(match_map["value"])
@@ -119,8 +119,10 @@ func NewAlgoliaMatch (match_map map[string]interface {}) AlgoliaMatch {
 	return out
 }
 
-func Int(r interface {}) int64 {
+func Int(r interface{}) int64 {
 	switch casted := r.(type) {
+	case int:
+		return int64(casted)
 	case int64:
 		return casted
 	case string:
@@ -141,4 +143,3 @@ func String(r interface{}) string {
 		return ""
 	}
 }
-
