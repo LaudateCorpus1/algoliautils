@@ -63,6 +63,7 @@ type AlgoliaSearchResponse struct {
 	ProcessingTimeMS int64
 	Query            string
 	Params           string
+	Cursor           string
 }
 
 func NewAlgoliaSearchResponse(r interface{}) AlgoliaSearchResponse {
@@ -75,6 +76,7 @@ func NewAlgoliaSearchResponse(r interface{}) AlgoliaSearchResponse {
 		out.ProcessingTimeMS = Int(m["processingTimeMS"])
 		out.Query = String(m["query"])
 		out.Params = String(m["params"])
+		out.Cursor = String(m["cursor"])
 
 		if results, has_results := m["hits"].([]interface{}); has_results == true {
 			for _, result := range results {
